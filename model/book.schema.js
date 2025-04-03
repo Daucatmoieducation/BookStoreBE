@@ -8,7 +8,7 @@ const authorsSchema = new mongoose.Schema({
 const bookSchema = new mongoose.Schema({
     authors: [authorsSchema],
     book_cover: { type: String, default: null },
-    categories: String,
+    categories: { type: String, default: null },
     current_seller: {
         id: Number,
         sku: String,

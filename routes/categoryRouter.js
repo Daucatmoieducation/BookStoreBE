@@ -8,5 +8,6 @@ categoryRouter.put('/:id', categoryController.updateCategory); // Update a categ
 categoryRouter.delete('/:id', categoryController.deleteCategory); // Delete a category by ID
 categoryRouter.post('/', categoryController.createCategory); // Create a new category
 categoryRouter.get('/:id', categoryController.getCategoryById); // Get a category by ID
+categoryRouter.get('/name/:name', categoryController.getCategoryByName); // Get a category by name
 
 export default categoryRouter;

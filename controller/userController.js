@@ -53,7 +53,7 @@ const userController = {
             // Generate JWT token
             const token = jwt.sign(
                 {
-                    userId: user._id,
+                    _id: user._id, // Use _id instead of userId
                     username: user.username,
                     email: user.email,
                     role: user.role,
@@ -88,32 +88,61 @@ const userController = {
     },
 
     updateUserById: async (req, res) => {
-        let user = req.body;
-        let userId = req.params.id;
-        let rs = await userModel.findByIdAndUpdate(
-            { _id: userId },
-            user,
-            { new: true }
-        )
-        res.status(200).send(rs)
+        try{
+            const { id } = req.params;
+            const updatedData = req.body;
+            const updateUser = await userModel.findByIdAndUpdate(
+                id,
+                updatedData,
+                { new: true }
+            );
+            if (!updateUser) {
+                return res.status(404).send({ message: "User not found" });
+            }
+            res.status(200).json({ message: 'Book updated successfully', book: updatedBook });
+        }
+        
+        
+        catch (error) {
+            res.status(500).json({ message: 'Error updating book', error: error.message });
+        }
     },
 
 
     getUserById: async (req, res) => {
-        const userId = req.user.userId;
-        const user = await userModel.findById(userId);
-        res.status(200).send(user)
+        try {
+            const userId = req.user._id; // Use _id from the token payload
+            const user = await userModel.findById(userId);
+            if (!user) {
+                return res.status(404).send({ message: "User not found" });
+            }
+            res.status(200).send(user);
+        } catch (error) {
+            res.status(400).send({ message: error.message });
+        }
     },
 
     delUser: async (req, res) => {
-        let user = req.body;
-        let userId = req.params.id;
-        let rs = await userModel.findByIdAndDelete(
-            { _id: userId },
-            user,
-            { new: true }
-        )
-        res.status(200).send(rs)
+        try {
+            let userId = req.params.id;
+            let rs = await userModel.findByIdAndUpdate(
+                userId,
+                {
+                    status: "Inactive",
+                    username: null,
+                    email: null,
+                    phone: null,
+                    password: null
+                },
+                { new: true }
+            );
+            if (!rs) {
+                return res.status(404).send({ message: "User not found" });
+            }
+            res.status(200).send(rs);
+        } catch (error) {
+            res.status(400).send({ message: error.message });
+        }
     },
 
 }
