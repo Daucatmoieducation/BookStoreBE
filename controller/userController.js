@@ -99,12 +99,12 @@ const userController = {
             if (!updateUser) {
                 return res.status(404).send({ message: "User not found" });
             }
-            res.status(200).json({ message: 'Book updated successfully', book: updatedBook });
+            res.status(200).json({ message: 'User updated successfully', book: updateUser });
         }
         
         
         catch (error) {
-            res.status(500).json({ message: 'Error updating book', error: error.message });
+            res.status(500).json({ message: 'Error updating user', error: error.message });
         }
     },
 
@@ -124,9 +124,9 @@ const userController = {
 
     delUser: async (req, res) => {
         try {
-            let userId = req.params.id;
-            let rs = await userModel.findByIdAndUpdate(
-                userId,
+            const { id } = req.params; 
+            const deleteUser = await userModel.findByIdAndUpdate(
+                id,
                 {
                     status: "Inactive",
                     username: null,
@@ -136,10 +136,10 @@ const userController = {
                 },
                 { new: true }
             );
-            if (!rs) {
+            if (!deleteUser) {
                 return res.status(404).send({ message: "User not found" });
             }
-            res.status(200).send(rs);
+            res.status(200).send(deleteUser);
         } catch (error) {
             res.status(400).send({ message: error.message });
         }

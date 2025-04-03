@@ -23,6 +23,6 @@ app.get("/", (req, res) => {
     res.status(200).json({ message: "hello" });
 });
 
-app.listen(8080, () => {
+app.listen(8000, () => {
     console.log("Server is running")
 })

@@ -6,10 +6,10 @@ const userRouter = express.Router();
 
 userRouter.get('/', userController.getUsers);
 userRouter.get('/infor', userMiddleware.verifyToken, userController.getUserById)
-userRouter.post('/register', userMiddleware.checkValidUser ,userController.register);
-userRouter.post('/login' ,userController.login);
+userRouter.post('/register', userMiddleware.checkValidUser, userController.register);
+userRouter.post('/login', userController.login);
 userRouter.put('/update-user', userController.updateUser)
-userRouter.put('/userId/:id', userController.updateUserById);
-userRouter.delete('/:id', userController.delUser)
+userRouter.put('/:id', userMiddleware.verifyToken, userMiddleware.checkRole('Admin'), userController.updateUserById);
+userRouter.delete('/:id', userMiddleware.verifyToken, userMiddleware.checkRole('Admin'), userController.delUser)
 
 export default userRouter
