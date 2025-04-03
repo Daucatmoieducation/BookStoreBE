@@ -5,15 +5,10 @@ const authorsSchema = new mongoose.Schema({
     slug: String,
 });
 
-const categoriesSchema = new mongoose.Schema({
-    name: String,
-    is_leaf: Boolean,
-});
-
 const bookSchema = new mongoose.Schema({
     authors: [authorsSchema],
     book_cover: { type: String, default: null },
-    categories: categoriesSchema,
+    categories: String,
     current_seller: {
         id: Number,
         sku: String,

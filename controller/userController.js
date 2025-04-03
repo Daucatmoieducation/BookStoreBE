@@ -8,17 +8,22 @@ dotenv.config();
 
 const userController = {
     getUsers: async (req, res) => {
-        const listUser = await userModel.find();
-        res.status(200).send(listUser)
+        try {
+            const listUser = await userModel.find({ status: "Active" });
+            res.status(200).send(listUser);
+        } catch (error) {
+            res.status(400).send({ message: error.message });
+        }
     },
 
     register: async (req, res) => {
         try {
-            const { email, password, username } = req.body;
+            const { email, password, username, phone } = req.body;
             const hashedPassword = bcrypt.hashSync(password, 10);
             const saveuser = await userModel.create({
                 username,
                 email,
+                phone,
                 password: hashedPassword,
             })
             res.status(201).send(saveuser)
@@ -33,18 +38,18 @@ const userController = {
         try {
             const { email, password } = req.body;
             const user = await userModel.findOne({ email });
-    
+
             // Check if user exists
             if (!user) {
                 throw new Error('Email or password is invalid!');
             }
-    
+
             // Compare passwords
             const compare = bcrypt.compareSync(password, user.password);
             if (!compare) {
                 throw new Error('Email or password is invalid!');
             }
-    
+
             // Generate JWT token
             const token = jwt.sign(
                 {
@@ -56,7 +61,7 @@ const userController = {
                 process.env.SECRETKEY,
                 { expiresIn: '1h' }
             );
-    
+
             res.status(200).send({
                 message: "Login successful",
                 accessToken: token,
@@ -101,14 +106,26 @@ const userController = {
     },
 
     delUser: async (req, res) => {
-        let user = req.body;
-        let userId = req.params.id;
-        let rs = await userModel.findByIdAndDelete(
-            { _id: userId },
-            user,
-            { new: true }
-        )
-        res.status(200).send(rs)
+        try {
+            let userId = req.params.id;
+            let rs = await userModel.findByIdAndUpdate(
+                { _id: userId },
+                {
+                    status: "Inactive",
+                    username: null,
+                    email: null,
+                    phone: null,
+                    password: null
+                },
+                { new: true }
+            );
+            if (!rs) {
+                return res.status(404).send({ message: "User not found" });
+            }
+            res.status(200).send(rs);
+        } catch (error) {
+            res.status(400).send({ message: error.message });
+        }
     },
 
 }
