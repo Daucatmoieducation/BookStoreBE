@@ -106,26 +106,14 @@ const userController = {
     },
 
     delUser: async (req, res) => {
-        try {
-            let userId = req.params.id;
-            let rs = await userModel.findByIdAndUpdate(
-                { _id: userId },
-                {
-                    status: "Inactive",
-                    username: null,
-                    email: null,
-                    phone: null,
-                    password: null
-                },
-                { new: true }
-            );
-            if (!rs) {
-                return res.status(404).send({ message: "User not found" });
-            }
-            res.status(200).send(rs);
-        } catch (error) {
-            res.status(400).send({ message: error.message });
-        }
+        let user = req.body;
+        let userId = req.params.id;
+        let rs = await userModel.findByIdAndDelete(
+            { _id: userId },
+            user,
+            { new: true }
+        )
+        res.status(200).send(rs)
     },
 
 }
